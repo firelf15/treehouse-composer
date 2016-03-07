@@ -1,0 +1,13 @@
+{
+    "name": "firelf/composer",
+    "description": "Treehouse lesson on Composer",
+    "authors": [
+        {
+            "name": "FirElf15",
+            "email": "github@firelf.com"
+        }
+    ],
+    "require": {
+        "monolog/monolog": "^1.18"
+    }
+}
