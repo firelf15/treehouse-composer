@@ -47,14 +47,15 @@ $app->post(
       // feedback to user about an error
       $app->redirect('/contact');
     }
-    $transport = Swift_SendmailTransport::newInstance('/usr/sbin/sendmail');
+    $transport = Swift_SendmailTransport::newInstance('/usr/sbin/sendmail -bs');
     $mailer = \Swift_Mailer::newInstance($transport);
 
     $theMessage = \Swift_Message::newInstance();
     $theMessage->setSubject('Email from our website');
     $theMessage->setFrom(
       array(
-        $cleanSender => $cleanEmail,
+        // treehouse trickery deliberate error
+        $cleanEmail => $cleanSender,
       )
     );
     $theMessage->setTo('firelf@juno.com');
