@@ -2,11 +2,11 @@
 require 'vendor/autoload.php';
 date_default_timezone_set('America/Los_Angeles');
 
-$app = new \Slim\Slim(
-  array(
+$app = new \Slim\Slim(array(
     'view' => new \Slim\Views\Twig(),
   )
 );
+$app->add(new \Slim\Middleware\SessionCookie());
 
 $view = $app->view();
 $view->parserOptions = array(
@@ -18,33 +18,29 @@ $view->parserExtensions = array(
   new \Slim\Views\TwigExtension(),
 );
 
-$app->get(
-  '/',
-  function () use ($app) {
+$app->get('/', function () use ($app) {
     $app->render('about.twig'); // <-- SUCCESS
   }
 )->name('home');
 
-$app->get(
-  '/contact',
-  function () use ($app) {
+$app->get('/contact', function () use ($app) {
     $app->render('contact.twig'); // <-- SUCCESS
   }
 )->name('contact');
 
-$app->post(
-  '/contact',
-  function () use ($app) {
+$app->post('/contact', function () use ($app) {
     $sender = $app->request->post('sender');
     $email = $app->request->post('email');
     $message = $app->request->post('message');
-    if (!empty('sender') && !empty('email') && !empty('message')) {
+  // why does this condition never fail?
+  if (!empty('sender') && !empty('email') && !empty('message')) {
       $cleanSender = filter_var($sender, FILTER_SANITIZE_STRING);
       $cleanEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
       $cleanMessage = filter_var($message, FILTER_SANITIZE_STRING);
     }
     else {
-      // feedback to user about an error
+      // http://docs.slimframework.com/flash/overview/
+      $app->flash('error', 'All fields are required');
       $app->redirect('/contact');
     }
     $transport = Swift_SendmailTransport::newInstance('/usr/sbin/sendmail -bs');
@@ -54,7 +50,6 @@ $app->post(
     $theMessage->setSubject('Email from our website');
     $theMessage->setFrom(
       array(
-        // treehouse trickery deliberate error
         $cleanEmail => $cleanSender,
       )
     );
@@ -62,10 +57,15 @@ $app->post(
     $theMessage->setBody($cleanMessage);
 
     $result = $mailer->send($theMessage);
-    if($result > 0 ) {
+    if ($result > 0) {
       // feedback to user re: thank you
-      $app->redirect('/');
-    } else {
+      $app->flash(
+        'contact',
+        'Thank you for attempting to contact Waldo. He may be awhile responding seeing as he is dead.'
+      );
+      $app->redirect('/composer');
+    }
+    else {
       // feedback to use re: failure
       // log error
       $app->redirect('/contact');
