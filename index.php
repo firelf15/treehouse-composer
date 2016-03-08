@@ -2,7 +2,7 @@
 require 'vendor/autoload.php';
 date_default_timezone_set('America/Los_Angeles');
 
-$app = new \Slim\App();
+$app = new \Slim\Slim();
 
 $app->get('/', function () use ($app) {
   $app->render('index.html'); // <-- SUCCESS
