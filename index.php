@@ -60,6 +60,16 @@ $app->post(
     $theMessage->setTo('firelf@juno.com');
     $theMessage->setBody($cleanMessage);
 
+    $result = $mailer->send($theMessage);
+    if($result > 0 ) {
+      // feedback to user re: thank you
+      $app->redirect('/');
+    } else {
+      // feedback to use re: failure
+      // log error
+      $app->redirect('/contact');
+    }
+
   }
 )->name('contact');
 
