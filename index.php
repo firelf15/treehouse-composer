@@ -12,15 +12,15 @@ use \Psr\Http\Message\ResponseInterface as Response;
 // $log->addWarning('Foo');
 
 $app = new \Slim\App;
-$app->get(
-  '/hello/{name}',
-  function (Request $request, Response $response) {
-    $name = $request->getAttribute('name');
-    $response->getBody()->write("Hello, $name");
 
-    return $response;
-  }
-);
+$app->get('/', function(){
+  echo "Hello, this is the homepage.";
+});
+
+$app->get('/contact', function(){
+  echo "Feel free to contact us.";
+});
+
 $app->run();
 
 ?>
