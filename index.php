@@ -38,5 +38,8 @@ $app->post('/contact', function() use($app) {
   }
 })->name('contact');
 
+$transport = Swift_SendmailTransport::newInstance('/usr/sbin/sendmail');
+$mailer = \Swift_Mailer::newInstance($transport);
+
 $app->run();
 
